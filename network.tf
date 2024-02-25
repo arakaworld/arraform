@@ -14,3 +14,130 @@ resource "aws_vpc" "vpc" {
     Env     = var.environment
   }
 }
+
+# -------------------------------------
+# Subnet
+# -------------------------------------
+resource "aws_subnet" "pulic_subnet_1a" {
+  vpc_id                  = aws_vpc.vpc.id # aws_vpc.vpc.id は aws_vpc リソースの id 属性を参照している
+  availability_zone       = "ap-northeast-1a"
+  cidr_block              = "192.168.1.0/24"
+  map_public_ip_on_launch = true # パブリック IPv4 アドレスを自動割り当て
+
+  tags = {
+    Name    = "${var.project}-${var.environment}-pulic-subnet-1a"
+    Project = var.project
+    Env     = var.environment
+    Type    = "public"
+  }
+}
+
+resource "aws_subnet" "pulic_subnet_1c" {
+  vpc_id                  = aws_vpc.vpc.id
+  availability_zone       = "ap-northeast-1c"
+  cidr_block              = "192.168.2.0/24"
+  map_public_ip_on_launch = true
+
+  tags = {
+    Name    = "${var.project}-${var.environment}-pulic-subnet-1c"
+    Project = var.project
+    Env     = var.environment
+    Type    = "public"
+  }
+}
+
+resource "aws_subnet" "private_subnet_1a" {
+  vpc_id                  = aws_vpc.vpc.id
+  availability_zone       = "ap-northeast-1a"
+  cidr_block              = "192.168.3.0/24"
+  map_public_ip_on_launch = false
+
+  tags = {
+    Name    = "${var.project}-${var.environment}-private-subnet-1a"
+    Project = var.project
+    Env     = var.environment
+    Type    = "private"
+  }
+}
+
+resource "aws_subnet" "private_subnet_1c" {
+  vpc_id                  = aws_vpc.vpc.id
+  availability_zone       = "ap-northeast-1c"
+  cidr_block              = "192.168.4.0/24"
+  map_public_ip_on_launch = false
+
+  tags = {
+    Name    = "${var.project}-${var.environment}-private-subnet-1c"
+    Project = var.project
+    Env     = var.environment
+    Type    = "private"
+  }
+}
+
+# -------------------------------------
+# Route Table
+# -------------------------------------
+# パブリックルートテーブル
+resource "aws_route_table" "public_rt" {
+  vpc_id = aws_vpc.vpc.id
+
+  tags = {
+    Name    = "${var.project}-${var.environment}-public-rt"
+    Project = var.project
+    Env     = var.environment
+    Type    = "public"
+  }
+}
+
+# public subnet 1a と 1c に紐づける
+resource "aws_route_table_association" "public_rt_1a" {
+  route_table_id = aws_route_table.public_rt.id
+  subnet_id      = aws_subnet.pulic_subnet_1a.id
+}
+
+resource "aws_route_table_association" "public_rt_1c" {
+  route_table_id = aws_route_table.public_rt.id
+  subnet_id      = aws_subnet.pulic_subnet_1c.id
+}
+
+# プライベートルートテーブル
+resource "aws_route_table" "private_rt" {
+  vpc_id = aws_vpc.vpc.id
+
+  tags = {
+    Name    = "${var.project}-${var.environment}-private-rt"
+    Project = var.project
+    Env     = var.environment
+    Type    = "private"
+  }
+}
+
+# private subnet 1a と 1c に紐づける
+resource "aws_route_table_association" "private_rt_1a" {
+  route_table_id = aws_route_table.private_rt.id
+  subnet_id      = aws_subnet.private_subnet_1a.id
+}
+
+resource "aws_route_table_association" "private_rt_1c" {
+  route_table_id = aws_route_table.private_rt.id
+  subnet_id      = aws_subnet.private_subnet_1c.id
+}
+
+# -------------------------------------
+# Internet Gateway
+# -------------------------------------
+resource "aws_internet_gateway" "igw" {
+  vpc_id = aws_vpc.vpc.id
+
+  tags = {
+    Name    = "${var.project}-${var.environment}-igw"
+    Project = var.project
+    Env     = var.environment
+  }
+}
+
+resource "aws_route" "public_rt_igw_r" {
+  route_table_id         = aws_route_table.public_rt.id
+  destination_cidr_block = "0.0.0.0/0" # どこへでも行ける
+  gateway_id             = aws_internet_gateway.igw.id
+}
