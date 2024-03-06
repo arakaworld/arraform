@@ -18,28 +18,28 @@ resource "aws_vpc" "vpc" {
 # -------------------------------------
 # Subnet
 # -------------------------------------
-resource "aws_subnet" "pulic_subnet_1a" {
+resource "aws_subnet" "public_subnet_1a" {
   vpc_id                  = aws_vpc.vpc.id # aws_vpc.vpc.id は aws_vpc リソースの id 属性を参照している
   availability_zone       = "ap-northeast-1a"
   cidr_block              = "192.168.1.0/24"
   map_public_ip_on_launch = true # パブリック IPv4 アドレスを自動割り当て
 
   tags = {
-    Name    = "${var.project}-${var.environment}-pulic-subnet-1a"
+    Name    = "${var.project}-${var.environment}-public-subnet-1a"
     Project = var.project
     Env     = var.environment
     Type    = "public"
   }
 }
 
-resource "aws_subnet" "pulic_subnet_1c" {
+resource "aws_subnet" "public_subnet_1c" {
   vpc_id                  = aws_vpc.vpc.id
   availability_zone       = "ap-northeast-1c"
   cidr_block              = "192.168.2.0/24"
   map_public_ip_on_launch = true
 
   tags = {
-    Name    = "${var.project}-${var.environment}-pulic-subnet-1c"
+    Name    = "${var.project}-${var.environment}-public-subnet-1c"
     Project = var.project
     Env     = var.environment
     Type    = "public"
@@ -92,12 +92,12 @@ resource "aws_route_table" "public_rt" {
 # public subnet 1a と 1c に紐づける
 resource "aws_route_table_association" "public_rt_1a" {
   route_table_id = aws_route_table.public_rt.id
-  subnet_id      = aws_subnet.pulic_subnet_1a.id
+  subnet_id      = aws_subnet.public_subnet_1a.id
 }
 
 resource "aws_route_table_association" "public_rt_1c" {
   route_table_id = aws_route_table.public_rt.id
-  subnet_id      = aws_subnet.pulic_subnet_1c.id
+  subnet_id      = aws_subnet.public_subnet_1c.id
 }
 
 # プライベートルートテーブル
