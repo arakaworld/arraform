@@ -31,3 +31,6 @@ override.tf.json
 # Ignore CLI configuration files
 .terraformrc
 terraform.rc
+
+memo.txt
+data.tar.gz
