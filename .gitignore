@@ -34,3 +34,5 @@ terraform.rc
 
 memo.txt
 data.tar.gz
+*.pem
+*.pub
