@@ -27,7 +27,7 @@ resource "aws_instance" "app_server" {
   key_name = aws_key_pair.keypair.key_name
 
   tags = {
-    Name    = "${var.project}-${var.environment}-keypair"
+    Name    = "${var.project}-${var.environment}-app-ec2"
     Project = var.project
     Env     = var.environment
     Type    = "app"
