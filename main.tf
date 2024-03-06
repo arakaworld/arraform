@@ -6,6 +6,12 @@ terraform {
       version = "~> 3.0"
     }
   }
+  backend "s3" {
+    bucket  = "tastylog-tfstate-bucket-arakaworld"
+    key     = "tasylog-dev.tfstate"
+    region  = "ap-northeast-1"
+    profile = "udemy-terraform-terraform"
+  }
 }
 
 provider "aws" {
